@@ -2,6 +2,8 @@
 # the next line restarts using wish \
 exec wish "$0" ${1+"$@"}
 
+tk appname ide
+
 set screen_width [winfo screenwidth .]
 set screen_height [winfo screenheight .]
 
