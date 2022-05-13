@@ -41,6 +41,7 @@ namespace eval ::db_app {
   namespace export load_procedure
   namespace export create_procedures_table
   namespace export insert_example_procedures
+  namespace export load_package
 }
 
 proc ::db_app::select_procedure {name} {
@@ -88,12 +89,8 @@ proc ::db_app::create_procedures_table {} {
 
 proc ::db_app::insert_example_procedures {} {
   variable db
-  set main_body {
-    ::hello $name
-  }
-  set hello_body {
-    puts "Hello $name!"
-  }
+  set main_body {::hello $name}
+  set hello_body {puts "Hello $name!"}
   set main_arguments {name}
   set hello_arguments {name}
   $db eval {
@@ -102,11 +99,21 @@ proc ::db_app::insert_example_procedures {} {
   }
 }
 
+proc ::db_app::load_package {name version} {
+  # append current dir to find packages
+  lappend auto_path [pwd]
+  package ifneeded $name $version [list source [file join [pwd] "packages" "$name.tcl"]]
+}
+
 package provide db_app $db_app_version
 
 #
 # db_app namespace END
 #
+
+package unknown ::db_app::load_package
+package require LOL 1.0.0
+#::LOL::test
 
 proc init {name} {
   # defined inside this file:
@@ -115,7 +122,6 @@ proc init {name} {
   ::main $name
 }
 
-set name [lindex $argv 0]
-if {[llength $argv] == 0} { set name "World" }
+set name [expr {[llength $argv] == 0 ? "World" : [lindex $argv 0]}]
 
 init $name
