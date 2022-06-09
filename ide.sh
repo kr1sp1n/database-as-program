@@ -2,6 +2,8 @@
 # the next line restarts using wish \
 exec wish "$0" ${1+"$@"}
 
+package require Tk
+
 source "packages/db_app.tcl"
 
 set tcl_procedures [::db_app::all_procedures]
@@ -50,7 +52,7 @@ proc saveProcedure {} {
   global selected_procedure_id
   global selected_procedure
   global textEditor
-  lassign $selected_procedure id name arguments
+  lassign $selected_procedure id name arguments old_body
   set dump [$textEditor dump -text "1.0" end]
   set body ""
   for {set i 0} {$i<[llength $dump]} {incr i} {
@@ -66,11 +68,20 @@ proc saveProcedure {} {
       }
     }
   }
-  ::db_app::update_procedure $selected_procedure_id $name $arguments $body
+  set old_body_sha3 [::db_app::sha3 $old_body]
+  set new_body_sha3 [::db_app::sha3 $body]
+  set is_equal [expr { $old_body_sha3 == $new_body_sha3 }]
+  if {!$is_equal} {
+    ::db_app::update_procedure $selected_procedure_id $name $arguments $body
+  }
 }
 
 set saveButton [button $w.save -text Save -command saveProcedure]
 pack $saveButton
+
+bind $w <Control-s> {
+  saveProcedure
+}
 
 wm withdraw $w
 update

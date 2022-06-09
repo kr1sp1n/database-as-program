@@ -6,6 +6,7 @@ set sqlite_args [list $db app.db -create true]
 sqlite3 {*}$sqlite_args
 $db enable_load_extension true
 $db eval { SELECT load_extension("ulid"); }
+$db eval { SELECT load_extension("shathree"); }
 
 #
 # db_app namespace START
@@ -20,7 +21,10 @@ namespace eval ::db_app {
   namespace export load_procedure
   namespace export create_procedures_table
   namespace export insert_example_procedures
+  namespace export update_procedure
   namespace export load_package
+  namespace export sha3
+  namespace export sha3_compare
 }
 
 proc ::db_app::all_procedures {} {
@@ -115,6 +119,21 @@ proc ::db_app::insert_example_procedures {} {
     INSERT INTO procedures (name, arguments, body) VALUES ('::main', $main_arguments, $main_body);
     INSERT INTO procedures (name, arguments, body) VALUES ('::hello', $hello_arguments, $hello_body);
   }
+}
+
+proc ::db_app::sha3 {value} {
+  variable db
+  set sql "SELECT hex(sha3(:value,224));"
+  set stmt [format $sql]
+  set result [$db eval $stmt]
+  return $result
+}
+
+# Calculate SHA3 sum:
+proc ::db_app::sha3_compare {value1 value2} {
+  set result1 [::db_app::sha3 $value1]
+  set result2 [::db_app::sha3 $value2]
+  return [expr {$result1 == $result2}]
 }
 
 package provide db_app $::db_app::version
