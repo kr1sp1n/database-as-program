@@ -21,16 +21,14 @@ proc unknown args {
   eval $name $arguments
 }
 
-# proc load_package {name version} {
-#   # append current dir to find packages
-#   lappend auto_path [pwd]
-#   package ifneeded $name $version [list source [file join [pwd] "packages" "$name.tcl"]]
-# }
+proc load_package {name version} {
+  # append current dir to find packages
+  lappend auto_path [pwd]
+  package ifneeded $name $version [list source [file join [pwd] "packages" "$name.tcl"]]
+}
 
-# package unknown load_package
-
-# package require LOL 1.0.0
-# package require db_app 1.0.0
+package unknown load_package
+package require LOL 1.0.0
 #::LOL::test
 
 proc init {name} {
