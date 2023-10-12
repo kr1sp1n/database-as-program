@@ -43,8 +43,8 @@ toplevel $w
 wm title $w "This is $w"
 # Put a GUI in it
 set textEditor [text $w.textEditor \
-  -background black \
-  -foreground white
+  -background white \
+  -foreground black
 ]
 pack $textEditor -expand 1 -fill both
 
