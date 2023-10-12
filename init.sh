@@ -1,6 +1,6 @@
 #!/bin/sh
-# the next line restarts using tclsh \
-exec tclsh "$0" ${1+"$@"}
+# the next line restarts using tclkit \
+exec tclkit "$0" ${1+"$@"}
 
 source "packages/db_app.tcl"
 
